@@ -63,12 +63,14 @@ public class SequenceManager : MonoBehaviour
     [SerializeField]
     float beatSpawnTime = 10;
 
-    private AudioSource musicPlayer;
+    public AudioSource musicPlayer;
     private AudioClip song;
     private bool recordMode;
     private bool playMode;
     private LinkedList<Node> sequence;
-
+    private LinkedList<Node> sequence2;
+    private LinkedList<Node> sequenceLeft;
+    private LinkedList<Node> sequenceRight;
     
     // Start is called before the first frame update
     void Start()
@@ -103,9 +105,10 @@ public class SequenceManager : MonoBehaviour
             textTimer.text = $"{minute:00}:{second:00}:{ms:00}";
 
             // Playback Drum Sequence
-            if (playMode && sequence.Count > 0)
+ 
+            if (playMode && sequence2.Count > 0)
             {
-                Node node = sequence.First.Value;
+                Node node = sequence2.First.Value;
 
                 if (time >= node.time)
                 {
@@ -118,12 +121,12 @@ public class SequenceManager : MonoBehaviour
                         //playDrumRight();
                     }
 
-                    sequence.RemoveFirst();
+                    sequence2.RemoveFirst();
                 }
             }
 
             // Spawm Drum Beat
-            // Spawn All Nodes within 5 Seconds
+            // Spawn All Nodes within 3 Seconds
             if (playMode && sequence.Count > 0)
             {
                 
@@ -134,7 +137,10 @@ public class SequenceManager : MonoBehaviour
                         if(node.spawned == false)
                         {
                             GameObject beatObj = GameObject.Instantiate(beatPrefab);
+
                             Beat beat = beatObj.GetComponent<Beat>();
+                            beat.manager = this;
+                            beat.hitTime = node.time;
 
                             if (node.drum == Drum.left)
                             {
@@ -159,6 +165,38 @@ public class SequenceManager : MonoBehaviour
                     }
                 }
             }
+
+
+            // Shred Missed Beat
+            while (sequenceLeft.Count > 0)
+            {
+                Node node = sequenceLeft.First.Value;
+
+                if (time - node.time > 0.5)
+                {
+                    sequenceLeft.RemoveFirst();
+                }
+                else
+                {
+                    break;
+                }
+
+                Debug.Log("L" + sequenceLeft.Count);
+            }
+
+            while (sequenceRight.Count > 0)
+            {
+                Node node = sequenceRight.First.Value;
+
+                if (time - node.time > 0.5)
+                {
+                    sequenceRight.RemoveFirst();
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
         else
         {
@@ -174,6 +212,9 @@ public class SequenceManager : MonoBehaviour
                 Debug.Log("--- Playback End ----");
             }
         }
+
+
+        // Detect Key Hit
 
         if(Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -196,12 +237,25 @@ public class SequenceManager : MonoBehaviour
         drumLeft.Play();
         GameObject.Instantiate(drumHitLeftFX, drumHitLeft);
 
+
+        float time = musicPlayer.time;
+
         if (recordMode)
         {
-            float time = musicPlayer.time;
             Node node = new Node(time, Drum.left);
             sequence.AddLast(node);
             Debug.Log(node);
+        }
+
+        if (playMode && sequenceLeft.Count > 0)
+        {
+            Node node = sequenceLeft.First.Value;
+
+            if (Mathf.Abs(time - node.time) < 1)
+            {
+                Debug.Log("Hit Left!");
+                sequenceLeft.RemoveFirst();
+            }
         }
 
     }
@@ -211,12 +265,25 @@ public class SequenceManager : MonoBehaviour
         drumRight.Play();
         GameObject.Instantiate(drumHitRightFX, drumHitRight);
 
+
+        float time = musicPlayer.time;
+
         if (recordMode)
         {
-            float time = musicPlayer.time;
             Node node = new Node(time, Drum.right);
             sequence.AddLast(node);
             Debug.Log(node);
+        }
+
+        if (playMode && sequenceRight.Count > 0)
+        {
+            Node node = sequenceRight.First.Value;
+
+            if (Mathf.Abs(time - node.time) < 1)
+            {
+                Debug.Log("Hit Right!");
+                sequenceRight.RemoveFirst();
+            }
         }
     }
 
@@ -302,7 +369,27 @@ public class SequenceManager : MonoBehaviour
         loadSequence(song.name + ".txt");
         playMusic();
         playMode = true;
-        
+
+        // Load Sequence
+        sequence2 = new LinkedList<Node>();
+        sequenceLeft = new LinkedList<Node>();
+        sequenceRight = new LinkedList<Node>();
+
+        foreach (Node node in sequence)
+        {
+            sequence2.AddLast(node);
+
+            if (node.drum == Drum.left)
+            {
+                sequenceLeft.AddLast(node);
+            }
+            else
+            {
+                sequenceRight.AddLast(node);
+            }
+        }
+
+
     }
 
 }
