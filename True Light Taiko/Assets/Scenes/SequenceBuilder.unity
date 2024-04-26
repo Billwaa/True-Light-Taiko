@@ -2730,6 +2730,8 @@ MonoBehaviour:
   beatPrefab: {fileID: 6364345623252032659, guid: 707e1cafb7e2044eb838eb7a6bea3fff, type: 3}
   drumHitLeft: {fileID: 1952255941}
   drumHitRight: {fileID: 491802135}
+  drumHitLeftFX: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
+  drumHitRightFX: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
   beatSpeed: 5
   beatSpawnTime: 10
 --- !u!4 &1424129973

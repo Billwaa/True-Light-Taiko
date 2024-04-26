@@ -52,6 +52,12 @@ public class SequenceManager : MonoBehaviour
     Transform drumHitRight;
 
     [SerializeField]
+    GameObject drumHitLeftFX;
+
+    [SerializeField]
+    GameObject drumHitRightFX;
+
+    [SerializeField]
     float beatSpeed = 3;
 
     [SerializeField]
@@ -131,11 +137,13 @@ public class SequenceManager : MonoBehaviour
                             Beat beat = beatObj.GetComponent<Beat>();
 
                             if (node.drum == Drum.left)
-                            { 
+                            {
+                                beatObj.GetComponent<SpriteRenderer>().color = Color.red;
                                 beat.setIntercept(drumHitLeft, beatSpeed, node.time - time);
                             }
                             else
                             {
+                                beatObj.GetComponent<SpriteRenderer>().color = Color.yellow;
                                 beat.setIntercept(drumHitRight, beatSpeed, node.time - time);
                             }
 
@@ -186,6 +194,7 @@ public class SequenceManager : MonoBehaviour
     public void playDrumLeft()
     {
         drumLeft.Play();
+        GameObject.Instantiate(drumHitLeftFX, drumHitLeft);
 
         if (recordMode)
         {
@@ -200,6 +209,7 @@ public class SequenceManager : MonoBehaviour
     public void playDrumRight()
     {
         drumRight.Play();
+        GameObject.Instantiate(drumHitRightFX, drumHitRight);
 
         if (recordMode)
         {
