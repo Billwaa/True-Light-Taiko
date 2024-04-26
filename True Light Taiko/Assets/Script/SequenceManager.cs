@@ -44,8 +44,8 @@ public class SequenceManager : MonoBehaviour
 
     private AudioSource musicPlayer;
     private AudioClip song;
-    private float T0;
     private bool recordMode;
+    private bool playMode;
     private LinkedList<Node> sequence;
 
     
@@ -74,22 +74,44 @@ public class SequenceManager : MonoBehaviour
     {
         if(musicPlayer.isPlaying)
         {
-            float time = Time.fixedTime - T0;
+            float time = musicPlayer.time;
             int minute = (int) time / 60;
             int second = (int) time % 60;
             int ms = (int) ((time * 100) % 100);
 
             textTimer.text = $"{minute:00}:{second:00}:{ms:00}";
+
+            if (playMode && sequence.Count > 0)
+            {
+                Node node = sequence.First.Value;
+
+                if (time >= node.time)
+                {
+                    if (node.drum == Drum.left)
+                    {
+                        playDrumLeft();
+                    }
+                    else if (node.drum == Drum.right)
+                    {
+                        playDrumRight();
+                    }
+
+                    sequence.RemoveFirst();
+                }
+            }
         }
         else
         {
-            if (sequence != null && sequence.Count > 0)
+            if (recordMode && sequence != null && sequence.Count > 0)
             {
+                recordMode = false;
                 saveSequence();
-                sequence = null;
-                loadSequence(song.name+".txt");
-                printSequence();
-                sequence = null;
+            }
+
+            if (playMode)
+            {
+                playMode = false;
+                Debug.Log("--- Playback End ----");
             }
         }
 
@@ -115,7 +137,7 @@ public class SequenceManager : MonoBehaviour
 
         if (recordMode)
         {
-            float time = Time.fixedTime - T0;
+            float time = musicPlayer.time;
             Node node = new Node(time, Drum.left);
             sequence.AddLast(node);
             Debug.Log(node);
@@ -129,7 +151,7 @@ public class SequenceManager : MonoBehaviour
 
         if (recordMode)
         {
-            float time = Time.fixedTime - T0;
+            float time = musicPlayer.time;
             Node node = new Node(time, Drum.right);
             sequence.AddLast(node);
             Debug.Log(node);
@@ -139,7 +161,6 @@ public class SequenceManager : MonoBehaviour
     public void playMusic()
     {
         musicPlayer.Play();
-        T0 = Time.fixedTime;
     }
 
     public void stopMusic()
@@ -217,7 +238,8 @@ public class SequenceManager : MonoBehaviour
     {
         Debug.Log("----- PLAYBACK -----");
         loadSequence(song.name + ".txt");
-        
+        playMusic();
+        playMode = true;
         
     }
 
