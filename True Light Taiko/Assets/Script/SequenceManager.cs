@@ -45,6 +45,7 @@ public class SequenceManager : MonoBehaviour
     private AudioSource musicPlayer;
     private AudioClip song;
     private float T0;
+    private bool recordMode;
     private LinkedList<Node> sequence;
 
     
@@ -57,14 +58,15 @@ public class SequenceManager : MonoBehaviour
         song = Resources.Load<AudioClip>("Music/Satisfaction");
         Debug.Log(song.name);
         musicPlayer.clip = song;
+        recordMode = false;
 
     }
 
     public void RecordSequence()
-    {
-        musicPlayer.Play();
+    { 
+        playMusic();
         sequence = new LinkedList<Node>();
-        T0 = Time.fixedTime;
+        recordMode = true;
     }
 
     // Update is called once per frame
@@ -81,17 +83,12 @@ public class SequenceManager : MonoBehaviour
         }
         else
         {
-            if(sequence != null && sequence.Count > 0)
+            if (sequence != null && sequence.Count > 0)
             {
-                StreamWriter writer = new StreamWriter($"{song.name}.txt");
-
-                Debug.Log("------ sequence ------");
-                foreach (Node node in sequence) {
-                    Debug.Log(node);
-                    writer.WriteLine(node);
-                }
-
-                writer.Close();
+                saveSequence();
+                sequence = null;
+                loadSequence(song.name+".txt");
+                printSequence();
                 sequence = null;
             }
         }
@@ -115,19 +112,34 @@ public class SequenceManager : MonoBehaviour
     public void playDrumLeft()
     {
         drumLeft.Play();
-        float time = Time.fixedTime - T0;
-        Node node = new Node(time, Drum.left);
-        sequence.AddLast(node);
-        Debug.Log(node);
+
+        if (recordMode)
+        {
+            float time = Time.fixedTime - T0;
+            Node node = new Node(time, Drum.left);
+            sequence.AddLast(node);
+            Debug.Log(node);
+        }
+
     }
 
     public void playDrumRight()
     {
         drumRight.Play();
-        float time = Time.fixedTime - T0;
-        Node node = new Node(time, Drum.right);
-        sequence.AddLast(node);
-        Debug.Log(node);
+
+        if (recordMode)
+        {
+            float time = Time.fixedTime - T0;
+            Node node = new Node(time, Drum.right);
+            sequence.AddLast(node);
+            Debug.Log(node);
+        }
+    }
+
+    public void playMusic()
+    {
+        musicPlayer.Play();
+        T0 = Time.fixedTime;
     }
 
     public void stopMusic()
@@ -135,5 +147,78 @@ public class SequenceManager : MonoBehaviour
         musicPlayer.Stop();
     }
 
+    public void saveSequence()
+    {
+        if (sequence != null && sequence.Count > 0)
+        {
+            StreamWriter writer = new StreamWriter($"{song.name}.txt");
+
+            Debug.Log("------ Save Sequence ------");
+            foreach (Node node in sequence)
+            {
+                // Debug.Log(node);
+                writer.WriteLine(node);
+            }
+
+            writer.Close();
+
+            Debug.Log("---- Sequence Saved! -----");
+        }
+        else
+        {
+            Debug.Log("Sequence is Null!");
+        }
+    }
+
+    public void loadSequence(string fileName)
+    {
+        StreamReader reader = new StreamReader(fileName);
+        sequence = new LinkedList<Node>();
+
+        Debug.Log("----- Load Sequence -----");
+        while (reader.Peek() > 0)
+        {
+            string tmp = reader.ReadLine();
+            string[] str = tmp.Split('-');
+
+            float time = float.Parse(str[0]);
+            Drum drum = (Drum)System.Enum.Parse(typeof(Drum), str[1]);
+
+            Node node = new Node(time, drum);
+
+            sequence.AddLast(node);
+        }
+        reader.Close();
+        Debug.Log("------ End -------");
+    }
+
+    public void printSequence()
+    {
+        if (sequence != null && sequence.Count > 0)
+        {
+
+            Debug.Log("------ Print Sequence ------");
+
+            foreach (Node node in sequence)
+            {
+                Debug.Log(node);
+            }
+
+            Debug.Log("---- End -----");
+        }
+        else
+        {
+            Debug.Log("Sequence is Null!");
+        }
+    }
+
+
+    public void playBack()
+    {
+        Debug.Log("----- PLAYBACK -----");
+        loadSequence(song.name + ".txt");
+        
+        
+    }
 
 }
