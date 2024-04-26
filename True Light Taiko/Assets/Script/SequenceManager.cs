@@ -71,6 +71,8 @@ public class SequenceManager : MonoBehaviour
     private LinkedList<Node> sequence2;
     private LinkedList<Node> sequenceLeft;
     private LinkedList<Node> sequenceRight;
+
+    private float score;
     
     // Start is called before the first frame update
     void Start()
@@ -181,7 +183,6 @@ public class SequenceManager : MonoBehaviour
                     break;
                 }
 
-                Debug.Log("L" + sequenceLeft.Count);
             }
 
             while (sequenceRight.Count > 0)
@@ -251,9 +252,12 @@ public class SequenceManager : MonoBehaviour
         {
             Node node = sequenceLeft.First.Value;
 
-            if (Mathf.Abs(time - node.time) < 1)
+            if (Mathf.Abs(time - node.time) < 0.5)
             {
-                Debug.Log("Hit Left!");
+                float deltaScore = (float)((0.5f - Mathf.Abs(time - node.time)) / 0.5 * 100.0/sequence.Count);
+                score += deltaScore;
+                Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
+
                 sequenceLeft.RemoveFirst();
             }
         }
@@ -279,9 +283,12 @@ public class SequenceManager : MonoBehaviour
         {
             Node node = sequenceRight.First.Value;
 
-            if (Mathf.Abs(time - node.time) < 1)
+            if (Mathf.Abs(time - node.time) < 0.5)
             {
-                Debug.Log("Hit Right!");
+                float deltaScore = (float)((0.5f - Mathf.Abs(time - node.time)) / 0.5 * 100.0 / sequence.Count);
+                score += deltaScore;
+                Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
+
                 sequenceRight.RemoveFirst();
             }
         }
@@ -388,6 +395,9 @@ public class SequenceManager : MonoBehaviour
                 sequenceRight.AddLast(node);
             }
         }
+
+        // Reset Score
+        score = 0;
 
 
     }
