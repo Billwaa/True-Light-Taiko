@@ -14,11 +14,13 @@ public class Node {
 
     public float time;
     public Drum drum;
+    public bool spawned;
 
     public Node(float time, Drum drum)
     {
         this.time = time;
         this.drum = drum;
+        this.spawned = false;
     }
 
     override public string ToString()
@@ -39,8 +41,21 @@ public class SequenceManager : MonoBehaviour
 
     [SerializeField]
     AudioSource drumRight;
-    
 
+    [SerializeField]
+    GameObject beatPrefab;
+
+    [SerializeField]
+    Transform drumHitLeft;
+
+    [SerializeField]
+    Transform drumHitRight;
+
+    [SerializeField]
+    float beatSpeed = 3;
+
+    [SerializeField]
+    float beatSpawnTime = 10;
 
     private AudioSource musicPlayer;
     private AudioClip song;
@@ -81,6 +96,7 @@ public class SequenceManager : MonoBehaviour
 
             textTimer.text = $"{minute:00}:{second:00}:{ms:00}";
 
+            // Playback Drum Sequence
             if (playMode && sequence.Count > 0)
             {
                 Node node = sequence.First.Value;
@@ -89,14 +105,50 @@ public class SequenceManager : MonoBehaviour
                 {
                     if (node.drum == Drum.left)
                     {
-                        playDrumLeft();
+                        //playDrumLeft();
                     }
                     else if (node.drum == Drum.right)
                     {
-                        playDrumRight();
+                        //playDrumRight();
                     }
 
                     sequence.RemoveFirst();
+                }
+            }
+
+            // Spawm Drum Beat
+            // Spawn All Nodes within 5 Seconds
+            if (playMode && sequence.Count > 0)
+            {
+                
+                foreach(Node node in sequence)
+                {
+                    if (node.time - time < beatSpawnTime)
+                    {
+                        if(node.spawned == false)
+                        {
+                            GameObject beatObj = GameObject.Instantiate(beatPrefab);
+                            Beat beat = beatObj.GetComponent<Beat>();
+
+                            if (node.drum == Drum.left)
+                            { 
+                                beat.setIntercept(drumHitLeft, beatSpeed, node.time - time);
+                            }
+                            else
+                            {
+                                beat.setIntercept(drumHitRight, beatSpeed, node.time - time);
+                            }
+
+                            Node newNode = new Node(node.time, node.drum);
+                            newNode.spawned = true;
+
+                            sequence.Find(node).Value = newNode;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
