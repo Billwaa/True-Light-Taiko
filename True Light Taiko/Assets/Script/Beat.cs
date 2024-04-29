@@ -30,10 +30,10 @@ public class Beat : MonoBehaviour
         //this.transform.position += new Vector3(0, -speed, 0) * Time.deltaTime;
         this.transform.position = new Vector3(drumHit.position.x, drumHit.position.y + (hitTime - manager.musicPlayer.time) * speed, 0);
 
-        if (this.transform.position.y < drumHit.position.y)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.grey;
-        }
+        //if (this.transform.position.y < drumHit.position.y)
+        //{
+        //    this.GetComponent<SpriteRenderer>().color = Color.grey;
+        //}
 
         if (this.transform.position.y < -10)
         {

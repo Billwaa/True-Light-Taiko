@@ -15,12 +15,14 @@ public class Node {
     public float time;
     public Drum drum;
     public bool spawned;
+    public Beat beat;
 
     public Node(float time, Drum drum)
     {
         this.time = time;
         this.drum = drum;
         this.spawned = false;
+        beat = null;
     }
 
     override public string ToString()
@@ -157,11 +159,36 @@ public class SequenceManager : MonoBehaviour
                             {
                                 beatObj.GetComponent<SpriteRenderer>().color = Color.red;
                                 beat.setIntercept(drumHitLeft, beatSpeed, node.time - time);
+
+                                foreach (Node node2 in sequenceLeft)
+                                {
+                                    if (node.time == node2.time)
+                                    {
+                                        Node nodeT = new Node(node2.time, node2.drum);
+                                        nodeT.spawned = true;
+                                        nodeT.beat = beat;
+                                        sequenceLeft.Find(node2).Value = nodeT;
+                                        break;
+                                    }
+                                }
+
                             }
                             else
                             {
                                 beatObj.GetComponent<SpriteRenderer>().color = Color.yellow;
                                 beat.setIntercept(drumHitRight, beatSpeed, node.time - time);
+
+                                foreach (Node node2 in sequenceRight)
+                                {
+                                    if (node.time == node2.time)
+                                    {
+                                        Node nodeT = new Node(node2.time, node2.drum);
+                                        nodeT.spawned = true;
+                                        nodeT.beat = beat;
+                                        sequenceRight.Find(node2).Value = nodeT;
+                                        break;
+                                    }
+                                }
                             }
 
                             Node newNode = new Node(node.time, node.drum);
@@ -289,6 +316,7 @@ public class SequenceManager : MonoBehaviour
             if (Mathf.Abs(time - node.time) < beatDetectionTime / 2)
             { 
                 calcScore(node, time);
+                sequenceLeft.First.Value.beat.GetComponent<SpriteRenderer>().color = Color.grey;
                 sequenceLeft.RemoveFirst();
             }
         }
@@ -318,6 +346,7 @@ public class SequenceManager : MonoBehaviour
             if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
             {
                 calcScore(node, time);
+                sequenceRight.First.Value.beat.GetComponent<SpriteRenderer>().color = Color.grey;
                 sequenceRight.RemoveFirst();
             }
         }
