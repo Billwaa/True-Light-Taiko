@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.IO;
+using UnityEngine.Video;
 
 public enum Drum
 {
@@ -63,6 +64,9 @@ public class SequenceManager : MonoBehaviour
     GameObject drumHitRightFX;
 
     [SerializeField]
+    GameObject videoBackground;
+
+    [SerializeField]
     float beatSpeed = 3;
 
     [SerializeField]
@@ -83,6 +87,8 @@ public class SequenceManager : MonoBehaviour
     private LinkedList<Node> sequenceLeft;
     private LinkedList<Node> sequenceRight;
 
+    private VideoPlayer videoPlayer;
+
     private float score;
     
     // Start is called before the first frame update
@@ -91,8 +97,12 @@ public class SequenceManager : MonoBehaviour
         musicPlayer = GetComponent<AudioSource>();
         textTimer.text = ""+0;
 
-        song = Resources.Load<AudioClip>("Music/Satisfaction");       
+        videoPlayer = videoBackground.GetComponent<VideoPlayer>();
+        videoPlayer.clip = Resources.Load<VideoClip>("Video/Website-promo-2-16-5");
+        videoPlayer.Stop();
+        videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
+        song = Resources.Load<AudioClip>("Music/Satisfaction");
         Debug.Log(song.name);
         musicPlayer.clip = song;
         recordMode = false;
@@ -253,12 +263,16 @@ public class SequenceManager : MonoBehaviour
                 playMode = false;
                 Debug.Log("--- Playback End ----");
             }
+
+            videoPlayer.Stop();
+            videoBackground.GetComponent<SpriteRenderer>().enabled = false;
+
         }
 
 
         // Detect Key Hit
 
-        if(Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             playDrumLeft();
 
@@ -365,6 +379,9 @@ public class SequenceManager : MonoBehaviour
     public void stopMusic()
     {
         musicPlayer.Stop();
+        videoPlayer.Stop();
+        videoBackground.GetComponent<SpriteRenderer>().enabled = false;
+
     }
 
     public void saveSequence()
@@ -454,6 +471,8 @@ public class SequenceManager : MonoBehaviour
         loadSequence(song.name + ".txt");
         playMusic();
         playMode = true;
+        videoPlayer.Play();
+        videoBackground.GetComponent<SpriteRenderer>().enabled = true;
 
         // Load Sequence
         sequence2 = new LinkedList<Node>();
