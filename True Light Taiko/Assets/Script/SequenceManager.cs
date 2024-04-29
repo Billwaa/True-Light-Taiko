@@ -91,7 +91,8 @@ public class SequenceManager : MonoBehaviour
         musicPlayer = GetComponent<AudioSource>();
         textTimer.text = ""+0;
 
-        song = Resources.Load<AudioClip>("Music/Satisfaction");
+        song = Resources.Load<AudioClip>("Music/Satisfaction");       
+
         Debug.Log(song.name);
         musicPlayer.clip = song;
         recordMode = false;
@@ -206,34 +207,38 @@ public class SequenceManager : MonoBehaviour
 
 
             // Shred Missed Beat
-            while (sequenceLeft.Count > 0)
+            if (playMode)
             {
-                Node node = sequenceLeft.First.Value;
-
-                if (time - node.time > beatDetectionTime/2)
+                while (sequenceLeft.Count > 0)
                 {
-                    sequenceLeft.RemoveFirst();
-                }
-                else
-                {
-                    break;
+                    Node node = sequenceLeft.First.Value;
+
+                    if (time - node.time > beatDetectionTime / 2)
+                    {
+                        sequenceLeft.RemoveFirst();
+                    }
+                    else
+                    {
+                        break;
+                    }
+
                 }
 
+                while (sequenceRight.Count > 0)
+                {
+                    Node node = sequenceRight.First.Value;
+
+                    if (time - node.time > beatDetectionTime / 2)
+                    {
+                        sequenceRight.RemoveFirst();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
-
-            while (sequenceRight.Count > 0)
-            {
-                Node node = sequenceRight.First.Value;
-
-                if (time - node.time > beatDetectionTime/2)
-                {
-                    sequenceRight.RemoveFirst();
-                }
-                else
-                {
-                    break;
-                }
-            }
+            
         }
         else
         {
@@ -366,7 +371,10 @@ public class SequenceManager : MonoBehaviour
     {
         if (sequence != null && sequence.Count > 0)
         {
-            StreamWriter writer = new StreamWriter($"{song.name}.txt");
+            string path = "Assets/Resources/Sequence/" + song.name + ".txt";
+            Debug.Log(path);
+            
+            StreamWriter writer = new StreamWriter(path);
 
             Debug.Log("------ Save Sequence ------");
             foreach (Node node in sequence)
@@ -378,6 +386,7 @@ public class SequenceManager : MonoBehaviour
             writer.Close();
 
             Debug.Log("---- Sequence Saved! -----");
+            Debug.Log("NEED TO RESTART GAME TO LOAD SEQUENCE... SORRY THIS IS THE ONLY FOR WEBGL TO WORK. A BIT MORE WORK TO LOAD FROM RESOURCES.");
         }
         else
         {
@@ -387,23 +396,34 @@ public class SequenceManager : MonoBehaviour
 
     public void loadSequence(string fileName)
     {
-        StreamReader reader = new StreamReader(fileName);
+        TextAsset sequenceRaw = Resources.Load<TextAsset>($"Sequence/{song.name}");
+        string[] raw = sequenceRaw.text.Split("\n");
+
+        //string path = Path.GetFullPath(".") + "/Ext/" + fileName;
+        //Debug.Log(path);
+        //StreamReader reader = new StreamReader(path);
         sequence = new LinkedList<Node>();
 
         Debug.Log("----- Load Sequence -----");
-        while (reader.Peek() > 0)
+        //while (reader.Peek() > 0)
+        for (int i = 0; i < raw.Length; i++)
         {
-            string tmp = reader.ReadLine();
+            //string tmp = reader.ReadLine();
+            string tmp = raw[i];
+            Debug.Log(tmp);
             string[] str = tmp.Split('-');
 
-            float time = float.Parse(str[0]);
-            Drum drum = (Drum)System.Enum.Parse(typeof(Drum), str[1]);
+            if (str.Length == 2)
+            {
+                float time = float.Parse(str[0]);
+                Drum drum = (Drum)System.Enum.Parse(typeof(Drum), str[1]);
 
-            Node node = new Node(time, drum);
+                Node node = new Node(time, drum);
 
-            sequence.AddLast(node);
+                sequence.AddLast(node);
+            }
         }
-        reader.Close();
+        //reader.Close();
         Debug.Log("------ End -------");
     }
 
