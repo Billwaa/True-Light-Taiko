@@ -98,8 +98,7 @@ public class SequenceManager : MonoBehaviour
         textTimer.text = ""+0;
 
         videoPlayer = videoBackground.GetComponent<VideoPlayer>();
-        videoPlayer.clip = Resources.Load<VideoClip>("Video/Website-promo-2-16-5");
-        videoPlayer.Stop();
+        //videoPlayer.clip = Resources.Load<VideoClip>("Video/Website-promo-2-16-5");
         videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
         song = Resources.Load<AudioClip>("Music/Satisfaction");
@@ -264,7 +263,6 @@ public class SequenceManager : MonoBehaviour
                 Debug.Log("--- Playback End ----");
             }
 
-            videoPlayer.Stop();
             videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
         }
@@ -379,7 +377,6 @@ public class SequenceManager : MonoBehaviour
     public void stopMusic()
     {
         musicPlayer.Stop();
-        videoPlayer.Stop();
         videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
     }
@@ -471,7 +468,6 @@ public class SequenceManager : MonoBehaviour
         loadSequence(song.name + ".txt");
         playMusic();
         playMode = true;
-        videoPlayer.Play();
         videoBackground.GetComponent<SpriteRenderer>().enabled = true;
 
         // Load Sequence
