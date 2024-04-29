@@ -238,6 +238,20 @@ public class SequenceManager : MonoBehaviour
         
     }
 
+    public void calcScore(Node node)
+    {
+        float time = musicPlayer.time;
+        float halfTime = (float) (beatDetectionTime / 2.0);
+        float dTime = Mathf.Abs(time - node.time);
+        float scoreRatio = (halfTime - dTime) / halfTime;
+        float dScore = (float)(scoreRatio / sequence.Count * 100.0);
+        
+        score += dScore;
+        Debug.Log($"Hit! +{dScore:0.0}% = {score:.0}%");
+        textScore.text = $"{score:.0}%";
+
+        
+    }
 
     public void playDrumLeft()
     {
@@ -258,13 +272,9 @@ public class SequenceManager : MonoBehaviour
         {
             Node node = sequenceLeft.First.Value;
 
-            if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
-            {
-                float deltaScore = (float)((beatDetectionTime/2 - Mathf.Abs(time - node.time)) / beatDetectionTime/2 * 100.0/sequence.Count);
-                score += deltaScore;
-                Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
-                textScore.text = $"{score:.0}%";
-
+            if (Mathf.Abs(time - node.time) < beatDetectionTime / 2)
+            { 
+                calcScore(node);
                 sequenceLeft.RemoveFirst();
             }
         }
@@ -292,12 +302,7 @@ public class SequenceManager : MonoBehaviour
 
             if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
             {
-                float deltaScore = (float)((beatDetectionTime/2 - Mathf.Abs(time - node.time)) / beatDetectionTime/2 * 100.0 / sequence.Count);
-                score += deltaScore;
-                Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
-                textScore.text = $"{score:.0}%";
-
-
+                calcScore(node);
                 sequenceRight.RemoveFirst();
             }
         }
