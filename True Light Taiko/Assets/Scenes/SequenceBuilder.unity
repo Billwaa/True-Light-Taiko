@@ -2954,7 +2954,8 @@ MonoBehaviour:
   drumHitRightFX: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
   beatSpeed: 5
   beatSpawnTime: 3
-  beatDetectionTime: 0.5
+  beatDetectionTime: 0.25
+  perfectScoreTime: 0.04
   musicPlayer: {fileID: 0}
 --- !u!4 &1424129973
 Transform:

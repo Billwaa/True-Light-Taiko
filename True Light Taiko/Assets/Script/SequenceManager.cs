@@ -69,6 +69,9 @@ public class SequenceManager : MonoBehaviour
     [SerializeField]
     float beatDetectionTime = 0.25f;
 
+    [SerializeField]
+    float perfectScoreTime = 0.05f;
+
     public AudioSource musicPlayer;
     private AudioClip song;
     private bool recordMode;
@@ -238,13 +241,23 @@ public class SequenceManager : MonoBehaviour
         
     }
 
-    public void calcScore(Node node)
+    public void calcScore(Node node, float time)
     {
-        float time = musicPlayer.time;
-        float halfTime = (float) (beatDetectionTime / 2.0);
+        float halfTime = beatDetectionTime / 2.0f;
         float dTime = Mathf.Abs(time - node.time);
-        float scoreRatio = (halfTime - dTime) / halfTime;
-        float dScore = (float)(scoreRatio / sequence.Count * 100.0);
+
+        float scoreRatio = 0;
+
+        if (dTime < perfectScoreTime)
+        {
+            scoreRatio = 1;
+        }
+        else
+        {
+            scoreRatio = (halfTime - dTime + perfectScoreTime) / halfTime;
+        }
+
+        float dScore = scoreRatio / sequence.Count * 100.0f;
         
         score += dScore;
         Debug.Log($"Hit! +{dScore:0.0}% = {score:.0}%");
@@ -255,11 +268,12 @@ public class SequenceManager : MonoBehaviour
 
     public void playDrumLeft()
     {
+
+        float time = musicPlayer.time;
+
         drumLeft.Play();
         GameObject.Instantiate(drumHitLeftFX, drumHitLeft);
 
-
-        float time = musicPlayer.time;
 
         if (recordMode)
         {
@@ -274,7 +288,7 @@ public class SequenceManager : MonoBehaviour
 
             if (Mathf.Abs(time - node.time) < beatDetectionTime / 2)
             { 
-                calcScore(node);
+                calcScore(node, time);
                 sequenceLeft.RemoveFirst();
             }
         }
@@ -283,11 +297,12 @@ public class SequenceManager : MonoBehaviour
 
     public void playDrumRight()
     {
+
+        float time = musicPlayer.time;
+
         drumRight.Play();
         GameObject.Instantiate(drumHitRightFX, drumHitRight);
 
-
-        float time = musicPlayer.time;
 
         if (recordMode)
         {
@@ -302,7 +317,7 @@ public class SequenceManager : MonoBehaviour
 
             if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
             {
-                calcScore(node);
+                calcScore(node, time);
                 sequenceRight.RemoveFirst();
             }
         }
