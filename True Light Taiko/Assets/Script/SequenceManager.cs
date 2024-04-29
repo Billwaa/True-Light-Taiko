@@ -37,6 +37,9 @@ public class SequenceManager : MonoBehaviour
     TMP_Text textTimer;
 
     [SerializeField]
+    TMP_Text textScore;
+
+    [SerializeField]
     AudioSource drumLeft;
 
     [SerializeField]
@@ -62,6 +65,9 @@ public class SequenceManager : MonoBehaviour
 
     [SerializeField]
     float beatSpawnTime = 10;
+
+    [SerializeField]
+    float beatDetectionTime = 0.25f;
 
     public AudioSource musicPlayer;
     private AudioClip song;
@@ -174,7 +180,7 @@ public class SequenceManager : MonoBehaviour
             {
                 Node node = sequenceLeft.First.Value;
 
-                if (time - node.time > 0.5)
+                if (time - node.time > beatDetectionTime/2)
                 {
                     sequenceLeft.RemoveFirst();
                 }
@@ -189,7 +195,7 @@ public class SequenceManager : MonoBehaviour
             {
                 Node node = sequenceRight.First.Value;
 
-                if (time - node.time > 0.5)
+                if (time - node.time > beatDetectionTime/2)
                 {
                     sequenceRight.RemoveFirst();
                 }
@@ -252,11 +258,12 @@ public class SequenceManager : MonoBehaviour
         {
             Node node = sequenceLeft.First.Value;
 
-            if (Mathf.Abs(time - node.time) < 0.5)
+            if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
             {
-                float deltaScore = (float)((0.5f - Mathf.Abs(time - node.time)) / 0.5 * 100.0/sequence.Count);
+                float deltaScore = (float)((beatDetectionTime/2 - Mathf.Abs(time - node.time)) / beatDetectionTime/2 * 100.0/sequence.Count);
                 score += deltaScore;
                 Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
+                textScore.text = $"{score:.0}%";
 
                 sequenceLeft.RemoveFirst();
             }
@@ -283,11 +290,13 @@ public class SequenceManager : MonoBehaviour
         {
             Node node = sequenceRight.First.Value;
 
-            if (Mathf.Abs(time - node.time) < 0.5)
+            if (Mathf.Abs(time - node.time) < beatDetectionTime/2)
             {
-                float deltaScore = (float)((0.5f - Mathf.Abs(time - node.time)) / 0.5 * 100.0 / sequence.Count);
+                float deltaScore = (float)((beatDetectionTime/2 - Mathf.Abs(time - node.time)) / beatDetectionTime/2 * 100.0 / sequence.Count);
                 score += deltaScore;
                 Debug.Log($"Hit! +{deltaScore:0.0}% = {score:.0}%");
+                textScore.text = $"{score:.0}%";
+
 
                 sequenceRight.RemoveFirst();
             }
@@ -398,6 +407,8 @@ public class SequenceManager : MonoBehaviour
 
         // Reset Score
         score = 0;
+        textScore.text = $"{score:.0}%";
+
 
 
     }
