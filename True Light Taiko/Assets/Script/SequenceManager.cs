@@ -101,7 +101,7 @@ public class SequenceManager : MonoBehaviour
         //videoPlayer.clip = Resources.Load<VideoClip>("Video/Website-promo-2-16-5");
         videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
-        song = Resources.Load<AudioClip>("Music/Satisfaction");
+        song = Resources.Load<AudioClip>("Music/True Light March");
         Debug.Log(song.name);
         musicPlayer.clip = song;
         recordMode = false;
@@ -385,7 +385,8 @@ public class SequenceManager : MonoBehaviour
     {
         if (sequence != null && sequence.Count > 0)
         {
-            string path = "Assets/Resources/Sequence/" + song.name + ".txt";
+            //string path = "Assets/Resources/Sequence/" + song.name + ".txt";
+            string path = "Ext/" + song.name + ".txt";
             Debug.Log(path);
             
             StreamWriter writer = new StreamWriter(path);
@@ -410,20 +411,22 @@ public class SequenceManager : MonoBehaviour
 
     public void loadSequence(string fileName)
     {
-        TextAsset sequenceRaw = Resources.Load<TextAsset>($"Sequence/{song.name}");
-        string[] raw = sequenceRaw.text.Split("\n");
+        //Debug.Log($"Sequence /{song.name}");
+        //TextAsset sequenceRaw = Resources.Load<TextAsset>($"Sequence/{song.name}");
+        //Debug.Log(sequenceRaw.text);
+        //string[] raw = sequenceRaw.text.Split("\n");
 
-        //string path = Path.GetFullPath(".") + "/Ext/" + fileName;
-        //Debug.Log(path);
-        //StreamReader reader = new StreamReader(path);
+        string path = Path.GetFullPath(".") + "/Ext/" + fileName;
+        Debug.Log(path);
+        StreamReader reader = new StreamReader(path);
         sequence = new LinkedList<Node>();
 
         Debug.Log("----- Load Sequence -----");
-        //while (reader.Peek() > 0)
-        for (int i = 0; i < raw.Length; i++)
+        while (reader.Peek() > 0)
+        //for (int i = 0; i < raw.Length; i++)
         {
-            //string tmp = reader.ReadLine();
-            string tmp = raw[i];
+            string tmp = reader.ReadLine();
+            //string tmp = raw[i];
             Debug.Log(tmp);
             string[] str = tmp.Split('-');
 
