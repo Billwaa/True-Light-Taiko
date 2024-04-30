@@ -101,11 +101,44 @@ public class SequenceManager : MonoBehaviour
         //videoPlayer.clip = Resources.Load<VideoClip>("Video/Website-promo-2-16-5");
         videoBackground.GetComponent<SpriteRenderer>().enabled = false;
 
-        song = Resources.Load<AudioClip>("Music/True Light March");
-        Debug.Log(song.name);
-        musicPlayer.clip = song;
+        //song = Resources.Load<AudioClip>("Music/True Light March");
+        //Debug.Log(song.name);
+        //musicPlayer.clip = song;
+        ChangeSong("Satisfaction");
+
         recordMode = false;
 
+    }
+
+
+    public void ChangeSong(int num)
+    {
+        Debug.Log(num);
+
+        switch (num)
+        {
+            case 0:
+                ChangeSong("Satisfaction");
+                break;
+            case 1:
+                ChangeSong("True Light March");
+                break;
+            case 2:
+                ChangeSong("True Light Girls");
+                break;
+            case 3:
+                ChangeSong("Ha Ha True Light");
+                break;
+        }
+    }
+
+    public void ChangeSong(string songName)
+    {
+
+
+        song = Resources.Load<AudioClip>($"Music/{songName}");
+        Debug.Log(song.name);
+        musicPlayer.clip = song;
     }
 
     public void RecordSequence()

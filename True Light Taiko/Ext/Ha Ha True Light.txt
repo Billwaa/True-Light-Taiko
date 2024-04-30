@@ -1,0 +1,11 @@
+.60-left
+.88-right
+1.09-right
+1.32-right
+1.51-right
+1.74-right
+1.90-right
+2.04-right
+2.18-right
+2.30-right
+2.46-left

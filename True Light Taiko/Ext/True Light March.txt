@@ -1,8 +1,5 @@
-.56-right
-.91-left
-1.09-left
-1.37-right
-1.65-right
-1.90-right
-2.16-left
-2.37-right
+6.13-right
+7.08-right
+7.99-right
+8.45-right
+8.96-right
